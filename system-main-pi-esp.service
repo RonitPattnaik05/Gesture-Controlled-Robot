@@ -1,0 +1,32 @@
+. SYSTEMD SERVICES 
+rfcomm service 
+/etc/systemd/system/rfcomm-glove.service 
+[Unit] 
+Description=RFCOMM Bind for ESP32 Glove 
+After=bluetooth.service 
+ 
+[Service] 
+Type=oneshot 
+ 
+ 
+RemainAfterExit=yes 
+ExecStart=/usr/bin/rfcomm bind 0 ESP32_GLOVE 
+ExecStop=/usr/bin/rfcomm release 0 
+ 
+[Install] 
+WantedBy=multi-user.target 
+ 
+ gesture service 
+/etc/systemd/system/gesture-glove.service 
+[Unit] 
+Description=Gesture Recognition Service 
+After=rfcomm-glove.service 
+ 
+[Service] 
+User=pi 
+WorkingDirectory=/home/pi 
+ExecStart=/usr/bin/python3 /home/pi/gesture_bt_predict.py 
+Restart=always 
+ 
+[Install] 
+WantedBy=multi-user.target 
